@@ -1,14 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: autocomplete-app
+  name: autocomplete-frontend
   labels:
-    app: autocomplete-app
+    app: autocomplete-frontend
 spec:
-  type: LoadBalancer
   selector:
-    component: autocomplete-app
+    app: autocomplete-frontend
   ports:
-  - name: http
-    port: 80
+  - port: 5000
     protocol: TCP
+    targetPort: webui

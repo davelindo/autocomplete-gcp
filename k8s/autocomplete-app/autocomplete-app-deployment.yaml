@@ -21,3 +21,10 @@ spec:
             memory: 100Mi
         ports:
         - containerPort: 5000
+          name: webui
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 5000
+          initialDelaySeconds: 30
+          timeoutSeconds: 30

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+  </head>
+  <body>
+<input id="search" />
+</body>
+<script
+  src="https://code.jquery.com/jquery-1.12.4.min.js"
+  integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+  crossorigin="anonymous"></script>
+  <script
+  src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+  crossorigin="anonymous"></script>
+<script type="text/javascript">
+$(function () {
+    var getData = function (request, response) {
+        $.getJSON(
+            "http://127.0.0.1:8080/api/v1/namespaces/default/services/autocomplete-frontend/proxy/query?q=" + request.term,
+            function (data) {
+                response(data);
+            });
+    };
+ 
+    var selectItem = function (event, ui) {
+        $("#search").val(ui.item.value);
+        return false;
+    }
+ 
+    $("#search").autocomplete({
+        source: getData,
+        select: selectItem,
+        minLength: 2,
+        change: function() {
+            $("#search").val("").css("display", 2);
+        }
+    });
+});
+</script>
+</html>
+

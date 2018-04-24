@@ -1,4 +1,4 @@
-#!/usr/bin/python36
+#!/usr/local/bin/python
 
 import json
 import pandas as pd

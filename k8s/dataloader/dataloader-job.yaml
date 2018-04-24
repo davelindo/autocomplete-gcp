@@ -1,0 +1,11 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dataloader-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: bestbuy-dataloader
+        image: davelindon/dataloader
+      restartPolicy: OnFailure

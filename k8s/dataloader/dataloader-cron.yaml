@@ -1,0 +1,15 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: dataloader-cronjob
+spec:
+  schedule: "* * 23 * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: bestbuy-dataloader
+            image: davelindon/dataloader
+          restartPolicy: OnFailure

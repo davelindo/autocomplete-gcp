@@ -51,6 +51,10 @@ def get_suggestions_es_redis():
 
 @app.route('/healthcheck', methods=['POST', 'GET'])
 def healthcheck():
+    try:
+        response = r.client_list()
+    except redis.ConnectionError as e:
+        return json.dumps({ "error": e }), 500   
     rst = make_response('')
     rst.headers['Access-Control-Allow-Origin'] = '*'
     return rst

@@ -3,15 +3,14 @@ provider "google" {
 }
 
 resource "random_id" "id" {
-  byte_length = 4
+  byte_length = "4"
   prefix      = "${var.project_name}-"
 }
 
 resource "google_project" "project" {
   name            = "${var.project_name}"
-  project_id      = "${random_id.id.hex}"
+  project_id      = "${format("%.30s", random_id.id.hex)}"
   billing_account = "${var.billing_account}"
-  org_id          = "${var.org_id}"
 }
 
 resource "google_project_services" "project" {
@@ -19,6 +18,15 @@ resource "google_project_services" "project" {
 
   services = [
     "compute.googleapis.com",
+    "container.googleapis.com",
+    "containerregistry.googleapis.com",
+    "deploymentmanager.googleapis.com",
+    "replicapool.googleapis.com",
+    "replicapoolupdater.googleapis.com",
+    "resourceviews.googleapis.com",
+    "storage-api.googleapis.com",
+    "pubsub.googleapis.com",
+    "dns.googleapis.com",
   ]
 }
 

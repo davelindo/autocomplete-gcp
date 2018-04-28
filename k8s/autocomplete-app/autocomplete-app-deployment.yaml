@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: autocomplete-frontend
-        image: davelindon/autocomplete:latest
+        image: gcr.io/gcp-autocomplete-davelindon-05/autocomplete:latest
         resources:
           requests:
             cpu: 100m

@@ -3,29 +3,25 @@ resource "random_string" "gke_password" {
   special = false
 }
 
-resource "google_container_cluster" "gke_cluster" {
-  name               = "${var.project_name}-gke"
-  zone               = "${data.google_compute_zones.available.names[0]}"
-  initial_node_count = 3
-  project            = "${google_project.project.id}"
-  min_master_version = "${var.gke_min_master_version}"
-  node_version       = "${var.gke_node_version}"
+module "gke_cluster_west" {
+  source   = "./modules/gke_cluster/"
+  count    = "${var.enable_resources}"
+  name     = "${var.project_name}-${var.west_cluster_region}-gke"
+  region   = "${var.west_cluster_region}"
+  project  = "${google_project.project.id}"
+  username = "${var.labels["owner"]}"
+  password = "${random_string.gke_password.result}"
+  labels   = "${var.labels}"
+}
 
-  additional_zones = ["${slice(data.google_compute_zones.available.names, 1, length(data.google_compute_zones.available.*.names))}"]
-
-  master_auth {
-    username = "${var.labels["owner"]}"
-    password = "${random_string.gke_password.result}"
-  }
-
-  node_config {
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/devstorage.read_only",
-      "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring",
-    ]
-
-    labels = "${var.labels}"
-  }
+module "gke_cluster_east" {
+  source   = "./modules/gke_cluster/"
+  count = 0
+  #count    = "${var.enable_resources}"
+  name     = "${var.project_name}-${var.east_cluster_region}-gke"
+  region   = "${var.east_cluster_region}"
+  project  = "${google_project.project.id}"
+  username = "${var.labels["owner"]}"
+  password = "${random_string.gke_password.result}"
+  labels   = "${var.labels}"
 }

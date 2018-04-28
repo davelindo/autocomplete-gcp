@@ -7,5 +7,5 @@ spec:
     spec:
       containers:
       - name: bestbuy-dataloader
-        image: davelindon/dataloader
+        image: gcr.io/gcp-autocomplete-davelindon-05/dataloader:latest
       restartPolicy: OnFailure

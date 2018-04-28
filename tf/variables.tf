@@ -1,3 +1,7 @@
+variable "enable_resources" {
+  default = 1
+}
+
 variable "project_name" {
   default = "gcp-autocomplete-davelindon"
 }
@@ -7,6 +11,14 @@ variable "billing_account" {
 }
 
 variable "region" {
+  default = "us-west1"
+}
+
+variable "east_cluster_region" {
+  default = "us-east1"
+}
+
+variable "west_cluster_region" {
   default = "us-west1"
 }
 

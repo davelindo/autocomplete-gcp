@@ -5,11 +5,10 @@ import redis
 import html
 
 from elasticsearch import Elasticsearch
-es = Elasticsearch(['elasticsearch:9200'], sniff_on_start=True)
+es = Elasticsearch(['elasticsearch:9200'], sniff_on_start=True, sniff_on_connection_fail=True, max_retries=2)
 r = redis.Redis(host='redis-slave', port=6379, decode_responses=True)
 
 app = Flask(__name__)
-
 
 @app.route('/query', methods=['POST', 'GET'])
 def get_suggestions_es_redis():
@@ -63,3 +62,7 @@ def healthcheck():
 @app.route('/', methods=['GET'])
 def index():
     return render_template("index.html")
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, threaded=True)

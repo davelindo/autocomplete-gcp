@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vegeta-stress-test
+spec:
+  template:
+    spec:
+      containers:
+      - name: vegeta-stress-test
+        image: gcr.io/gcp-autocomplete-davelindon-05/vegeta-stress-test:latest
+        env:
+        - name: TARGET_HOST
+          value: GET http://ingress.gcp.davelindon.me/query?q=
+        - name: RATE
+          value: "100"
+        - name: TIMEOUT
+          value: 10s
+        - name: DURATION
+          value: 10m
+      restartPolicy: OnFailure

@@ -14,7 +14,17 @@ resource "google_container_cluster" "gke_cluster" {
 
   node_config {
     oauth_scopes = ["${var.oauth_scopes}"]
-
-    labels = "${var.labels}"
+    machine_type = "${var.machine_type}"
+    preemptible  = "${var.preemptible}"
+    labels       = "${var.labels}"
   }
+}
+
+resource "google_container_node_pool" "additional_node_pool" {
+  count      = "${var.additional_node_pools}"
+  project    = "${var.project}"
+  name       = "gke-${replace(google_container_cluster.gke_cluster.endpoint,".","-")}-${element(var.node_pool_zone,count.index)}"
+  zone       = "${element(var.node_pool_zone,count.index)}"
+  cluster    = "${google_container_cluster.gke_cluster.name}"
+  node_count = "${var.node_pool_node_count}"
 }

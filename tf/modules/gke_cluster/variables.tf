@@ -4,6 +4,14 @@ variable "project" {}
 variable "username" {}
 variable "password" {}
 
+variable "machine_type" {
+  default = "n1-standard-1"
+}
+
+variable "preemptible" {
+  default = true
+}
+
 variable "labels" {
   default = {}
   type    = "map"
@@ -15,6 +23,19 @@ variable "count" {
 
 variable "initial_node_count" {
   default = 1
+}
+
+variable "additional_node_pools" {
+  default = 0
+}
+
+variable node_pool_node_count {
+  default = 0
+}
+
+variable "node_pool_zone" {
+  default = []
+  type    = "list"
 }
 
 variable "min_master_version" {
@@ -33,6 +54,6 @@ variable "oauth_scopes" {
     "https://www.googleapis.com/auth/monitoring",
     "service-control",
     "service-management",
-    "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+    "https://www.googleapis.com/auth/ndev.clouddns.readwrite",
   ]
 }

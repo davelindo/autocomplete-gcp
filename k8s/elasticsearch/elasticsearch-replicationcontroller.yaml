@@ -5,7 +5,7 @@ metadata:
   labels:
     component: elasticsearch
 spec:
-  replicas: 6
+  replicas: 7
   template:
     metadata:
       labels:
@@ -35,6 +35,8 @@ spec:
               fieldPath: metadata.namespace
         - name: "CLUSTER_NAME"
           value: "autocomplete-es"
+        - name: "NUMBER_OF_MASTERS"
+          value: "4"
         - name: "DISCOVERY_SERVICE"
           value: "elasticsearch"
         - name: NODE_MASTER
@@ -43,6 +45,8 @@ spec:
           value: "true"
         - name: HTTP_ENABLE
           value: "true"
+        - name: ES_JAVA_OPTS
+          value: "-Xms1024m -Xmx1024m"
         ports:
         - containerPort: 9200
           name: http

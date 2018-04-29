@@ -5,9 +5,9 @@ metadata:
   namespace: default
 spec:
   scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
+    apiVersion: v1
+    kind: ReplicationController
     name: autocomplete-frontend
-  minReplicas: 3
-  maxReplicas: 10
+  minReplicas: 6
+  maxReplicas: 15
   targetCPUUtilizationPercentage: 50

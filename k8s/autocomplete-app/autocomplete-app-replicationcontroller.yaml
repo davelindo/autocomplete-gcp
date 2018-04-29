@@ -1,13 +1,10 @@
-apiVersion: apps/v1 #  for k8s versions before 1.9.0 use apps/v1beta2  and before 1.8.0 use extensions/v1beta1
-kind: Deployment
+apiVersion: v1
+kind: ReplicationController     
 metadata:
   name: autocomplete-frontend
   labels:
       app: autocomplete-frontend
 spec:
-  selector:
-    matchLabels:
-      app: autocomplete-frontend
   replicas: 3
   template:
     metadata:
@@ -17,13 +14,10 @@ spec:
       containers:
       - name: autocomplete-frontend
         image: gcr.io/gcp-autocomplete-davelindon-05/autocomplete:latest
-        resources:
-          requests:
-            cpu: 100m
-            memory: 100Mi
         ports:
         - containerPort: 5000
           name: webui
+        imagePullPolicy: Always
         livenessProbe:
           httpGet:
             path: /healthcheck

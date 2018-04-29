@@ -28,6 +28,9 @@ resource "google_project_services" "project" {
     "pubsub.googleapis.com",
     "dns.googleapis.com",
     "datastore.googleapis.com",
+    "stackdriverprovisioning.googleapis.com",
+    "monitoring.googleapis.com",
+    "logging.googleapis.com",
   ]
 }
 

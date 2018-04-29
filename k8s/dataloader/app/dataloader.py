@@ -31,8 +31,8 @@ def create_index():
         res = es.indices.delete(index = index_name)
     request_body = {
         "settings" : {
-            "number_of_shards": 12,
-            "number_of_replicas": 2
+            "number_of_shards": 25,
+            "number_of_replicas": 1
         }
     }
     print("creating '%s' index..." % (index_name))

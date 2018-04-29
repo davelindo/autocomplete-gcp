@@ -3,12 +3,16 @@ from flask import Flask, request, make_response, render_template
 import json
 import redis
 import html
+import logging
 
 from elasticsearch import Elasticsearch
 es = Elasticsearch(['elasticsearch:9200'], sniff_on_start=True, sniff_on_connection_fail=True, max_retries=2)
 r = redis.Redis(host='redis-slave', port=6379, decode_responses=True)
 
 app = Flask(__name__)
+app.logger.setLevel(logging.ERROR)
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 @app.route('/query', methods=['POST', 'GET'])
 def get_suggestions_es_redis():
@@ -17,25 +21,27 @@ def get_suggestions_es_redis():
         suggestions = r.get(query)
         if suggestions is None:
             query_name_contains = {
-                'query': {
-                    'match': {
-                        'name': {
-                            'query': str(html.unescape(query)), 
-                            'fuzziness': 'AUTO', 
-                            "operator": "and"
+                    'query': {
+                        'fuzzy': {
+                            'name': {
+                                'value': str(html.unescape(query)),
+                                'transpositions': 'true'
+                            }
                         }
                     }
                 }
-            }
-            print("querying ES for %s" % str(html.unescape(query)))
-            suggestions = es.search(
-                index="product_list", doc_type="product_name", body=query_name_contains)
-            suggestions = [s['_source']['name']
-                           for s in suggestions['hits']['hits']]
-            suggestions = json.dumps(suggestions)
-            w = redis.Redis(host='redis-master', port=6379,
-                            decode_responses=True)
-            w.set(query, suggestions)
+            try:   
+                suggestions = es.search(
+                    index="product_list", doc_type="product", body=query_name_contains)
+                suggestions = [s['_source']['name']
+                               for s in suggestions['hits']['hits']]
+                suggestions = json.dumps(suggestions)
+                w = redis.Redis(host='redis-master', port=6379,
+                                decode_responses=True)
+                w.set(query, suggestions)
+            except Exception as e:
+                print("failed to search Elasticsearch: %s" % e)
+
         if suggestions is not None:
             rst = make_response(suggestions)
         else:

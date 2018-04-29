@@ -12,7 +12,7 @@ spec:
         - name: TARGET_HOST
           value: GET http://ingress.gcp.davelindon.me/query?q=
         - name: RATE
-          value: "200"
+          value: "300"
         - name: TIMEOUT
           value: 10s
         - name: DURATION

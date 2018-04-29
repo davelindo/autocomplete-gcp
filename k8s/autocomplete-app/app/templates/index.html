@@ -5,8 +5,14 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <!-- Compiled and minified CSS -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.min.css">
         <!--Let browser know website is optimized for mobile-->
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <style>
+        .ui-menu-item-highlight {
+        font-weight: bold;
+        }
+        </style>
     </head>
     <body>
         <nav>
@@ -24,7 +30,6 @@
                         <div class="input-field col s12">
                             <i class="material-icons prefix">textsms</i>
                             <input type="text" id="autocomplete-input" class="autocomplete">
-                            
                         </div>
                     </div>
                 </div>
@@ -41,28 +46,47 @@
     crossorigin="anonymous"></script>
     
     <script type="text/javascript">
-    $(function () {
-    var getData = function (request, response) {
-    $.getJSON(
-    "./query?q=" + request.term,
-    function (data) {
-    response(data);
-    });
-    };
-    
-    var selectItem = function (event, ui) {
-    $("#autocomplete-input").val(ui.item.value);
-    return false;
-    }
-    
-    $("#autocomplete-input").autocomplete({
-    source: getData,
-    select: selectItem,
-    minLength: 2,
-    change: function() {
-    $("#autocomplete-input").val("").css("display", 2);
-    }
-    });
-    });
-    </script>
-</html>
+    function monkeyPatchAutocomplete() {
+    $.ui.autocomplete.prototype._renderItem = function (ul, item) {
+    // Escape any regex syntax inside this.term
+    var cleanTerm = this.term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    // Build pipe separated string of terms to highlight
+    var keywords = $.trim(cleanTerm).replace('  ', ' ').split(' ').join('|');
+    // Get the new label text to use with matched terms wrapped
+    // in a span tag with a class to do the highlighting
+    var re = new RegExp("(" + keywords + ")", "gi");
+    var output = item.label.replace(re,
+    '<span class="ui-menu-item-highlight">$1</span>');
+    return $("<li>")
+        .append($("<a>").html(output))
+            .appendTo(ul);
+            };
+            };
+            $(function () {
+            monkeyPatchAutocomplete();
+            });
+            $(function () {
+            var getData = function (request, response) {
+            $.getJSON(
+            "./query?q=" + request.term,
+            function (data) {
+            response(data);
+            });
+            };
+            
+            var selectItem = function (event, ui) {
+            $("#autocomplete-input").val(ui.item.value);
+            return false;
+            }
+            
+            $("#autocomplete-input").autocomplete({
+            source: getData,
+            select: selectItem,
+            minLength: 1,
+            change: function() {
+            $("#autocomplete-input").val("").css("display", 2);
+            }
+            });
+            });
+            </script>
+        </html>

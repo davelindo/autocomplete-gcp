@@ -6,7 +6,8 @@ import html
 import logging
 
 from elasticsearch import Elasticsearch
-es = Elasticsearch(['elasticsearch:9200'], sniff_on_start=True, sniff_on_connection_fail=True, max_retries=2)
+es = Elasticsearch(['elasticsearch:9200'], sniff_on_start=True,
+                   sniff_on_connection_fail=True, max_retries=2)
 r = redis.Redis(host='redis-slave', port=6379, decode_responses=True)
 
 app = Flask(__name__)
@@ -14,23 +15,24 @@ app.logger.setLevel(logging.ERROR)
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
+
 @app.route('/query', methods=['POST', 'GET'])
 def get_suggestions_es_redis():
     if request.args.get('q') != None:
-        query = request.args.get('q')
+        query = html.unescape(request.args.get('q')).lower()
         suggestions = r.get(query)
         if suggestions is None:
             query_name_contains = {
-                    'query': {
-                        'fuzzy': {
-                            'name': {
-                                'value': str(html.unescape(query)),
-                                'transpositions': 'true'
-                            }
+                "query": {
+                    "match": {
+                        "name": {
+                            "query": query,
+                            "fuzziness": "AUTO"
                         }
                     }
                 }
-            try:   
+            }
+            try:
                 suggestions = es.search(
                     index="product_list", doc_type="product", body=query_name_contains)
                 suggestions = [s['_source']['name']
@@ -38,7 +40,8 @@ def get_suggestions_es_redis():
                 suggestions = json.dumps(suggestions)
                 w = redis.Redis(host='redis-master', port=6379,
                                 decode_responses=True)
-                w.set(query, suggestions)
+                #Expire redis cache in 5 hours
+                w.set(query, suggestions, ex=18000)
             except Exception as e:
                 print("failed to search Elasticsearch: %s" % e)
 
@@ -59,7 +62,7 @@ def healthcheck():
     try:
         response = r.client_list()
     except redis.ConnectionError as e:
-        return json.dumps({ "error": e }), 500   
+        return json.dumps({"error": e}), 500
     rst = make_response('')
     rst.headers['Access-Control-Allow-Origin'] = '*'
     return rst

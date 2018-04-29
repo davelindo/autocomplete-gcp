@@ -5,17 +5,13 @@ ENV TIMEOUT 5s
 ENV RATE 300
 ENV DURATION 1m
 
+RUN mkdir /app/ && \
+    apk update && \
+    apk add wget && \
+    wget https://github.com/dwyl/english-words/raw/master/words.txt --no-check-certificate -O /app/targets && \
+    apk del wget
+
 COPY ./app /app/
 RUN ["chmod", "+x", "/app/run.sh"]
-
-RUN apk update && \
-    apk add git jq perl && \
-    cd /tmp/ && \
-    git clone https://github.com/BestBuyAPIs/open-data-set.git --depth 1 && \
-    cd open-data-set && \
-    cat products.json | jq .\[\].name -r | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g' | perl -pe 's/\s+/\n/g' | sort | uniq > /app/targets && \
-    rm -rf /tmp/open-data-set && \
-    apk del git jq perl
-
 WORKDIR /app/
 CMD [ "/app/run.sh" ]

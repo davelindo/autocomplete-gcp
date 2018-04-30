@@ -1,5 +1,5 @@
 #!/bin/bash
-for application in admins autocomplete-app elasticsearch kibana redis;
+for application in admins elasticsearch redis kibana autocomplete-app;
 do
   kubectl apply -f ${application}
 done

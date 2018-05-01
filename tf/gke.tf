@@ -7,7 +7,7 @@ module "gke_cluster_west" {
   source                = "./modules/gke_cluster/"
   count                 = "${var.enable_resources}"
   initial_node_count    = 1
-  machine_type          = "n1-highcpu-8"
+  machine_type          = "n1-highcpu-16"
   name                  = "${var.project_name}-${var.west_cluster_region}-gke"
   region                = "${var.west_cluster_region}"
   project               = "${google_project.project.id}"

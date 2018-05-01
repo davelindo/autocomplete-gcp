@@ -45,10 +45,6 @@ $ ./deploy.sh
 ```bash
 $ kubectl get pods
 ```
-7. Once elasticsearch is established, schedule the load of our target data.
-```bash
-$ kubectl create -f dataloader/
-```
 
 ## Visibility
 The cluster installs with the following visibility tooling:

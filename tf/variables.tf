@@ -1,5 +1,5 @@
 variable "enable_resources" {
-  default = 0
+  default = 1
 }
 
 variable "project_name" {

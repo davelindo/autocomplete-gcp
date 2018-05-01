@@ -7,7 +7,7 @@ ENV DURATION 1m
 
 RUN mkdir /app/ && \
     apk update && \
-    apk add wget && \
+    apk add wget bc && \
     wget https://github.com/dwyl/english-words/raw/master/words.txt --no-check-certificate -O /app/targets && \
     apk del wget
 

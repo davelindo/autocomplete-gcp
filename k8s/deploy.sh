@@ -1,5 +1,5 @@
 #!/bin/bash
-for application in admins elasticsearch redis kibana autocomplete-app; do
+for application in admins elasticsearch redis kibana; do
   kubectl apply -f ${application}
 done
 #Deploy dataloader, only when elasticsearch is green
@@ -13,7 +13,29 @@ until (( number_of_nodes > 4 )); do
   echo "Waiting for elasticsearch to have more than 4 nodes ready (currently ${number_of_nodes})"
   sleep 10
 done
+for application in dataloader autocomplete-app; do
+  kubectl apply -f ${application}
+done
+ingress_backend=''
+until grep -q "k8s" <<< "${ingress_backend}" ; do
+  #https://github.com/kubernetes/ingress-gce/blob/master/docs/faq/gce.md#can-i-configure-gce-health-checks-through-the-ingress
+  echo "Waiting for ingress controller to deploy a backend to change the health check interval..."
+  ingress_backend=$(kubectl get ingress autocomplete-frontend -o json | jq '.metadata.annotations."ingress.kubernetes.io/backends" | fromjson| keys[]' -r)
+  sleep 10
+done
+
+#Set timeout and check interval
+gcloud compute health-checks update http ${ingress_backend} --check-interval 10s --timeout 5s
+
 kill $KUBEPROXYPID
-for application in dataloader; do
+
+until (( $(curl -sL -w "%{http_code}\\n" "http://ingress.gcp.davelindon.me/healthcheck" -o /dev/null) == 200 ));
+do
+  echo "Waiting for the Global Load Balancer to provision..."
+  sleep 15
+done
+
+echo "Beginning stress test"
+for application in stresstest; do
   kubectl apply -f ${application}
 done

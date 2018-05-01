@@ -1,18 +1,18 @@
 apiVersion: v1
 kind: ReplicationController     
 metadata:
-  name: autocomplete-frontend
+  name: autocomplete-backend
   labels:
-      app: autocomplete-frontend
+      app: autocomplete-backend
 spec:
   replicas: 3
   template:
     metadata:
       labels:
-        app: autocomplete-frontend
+        app: autocomplete-backend
     spec:
       containers:
-      - name: autocomplete-frontend
+      - name: autocomplete-backend
         image: gcr.io/gcp-autocomplete-davelindon-05/autocomplete:latest
         ports:
         - containerPort: 5000
@@ -22,5 +22,14 @@ spec:
           httpGet:
             path: /healthcheck
             port: 5000
-          initialDelaySeconds: 30
-          timeoutSeconds: 30
+          initialDelaySeconds: 5
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 1
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 10

@@ -31,19 +31,14 @@ $ terraform plan
 $ terraform apply
 ```
 3. If you chose to create a managed zone you may need to set your nameservers appropriately
-4. Enable beta container APIs within the Cloud SDK. Grab kubectl configuration
+4. Configure kubectl credentials
 ```bash
-$ gcloud config set container/use_v1_api false
-$ gcloud beta container clusters get-credentials $(gcloud container clusters list |tail -n 1 | awk {'print $1'}) --region us-west1
+$ ./credentials
 ```
 5. Deploy kubernetes infrastructure
 ```bash
 $ cd ../k8s/
 $ ./deploy.sh
-```
-6. Check Pod status
-```bash
-$ kubectl get pods
 ```
 
 ## Visibility

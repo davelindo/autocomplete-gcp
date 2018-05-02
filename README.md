@@ -16,7 +16,7 @@ This repo contains the required terraform and kubernetes configuration files to 
  - Autocomplete App (Python Flask based)
  - HTTP Stress tester
 
-![alt text](https://github.com/davelindo/autocomplete-gcp/raw/master/src/support/arch.png "Architecture Diagram")
+![alt text](https://github.com/davelindo/autocomplete-gcp/raw/master/support/arch.png "Architecture Diagram")
 
 
 ## Preequisites

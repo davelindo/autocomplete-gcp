@@ -6,7 +6,7 @@ resource "random_string" "gke_password" {
 module "gke_cluster_west" {
   source                = "./modules/gke_cluster/"
   count                 = "${var.enable_resources}"
-  initial_node_count    = 1
+  initial_node_count    = 2
   machine_type          = "n1-highcpu-16"
   name                  = "${var.project_name}-${var.west_cluster_region}-gke"
   region                = "${var.west_cluster_region}"
@@ -21,7 +21,7 @@ module "gke_cluster_west" {
 
 /*
 #GCP Trial accounts have very limited resource allocations, removing multi region support foe now.
-module "gke_cluster_east" {
+module "gke_cluster_east" { 
   source                = "./modules/gke_cluster/"
   count                 = "${var.enable_resources}"
   initial_node_count    = 1
